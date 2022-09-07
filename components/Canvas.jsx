@@ -2,8 +2,6 @@ import { useDrop } from 'react-dnd'
 import Config from '../components/Config'
 import Components from './Components'
 import React, {useState} from 'react'
-import * as ReactDOM from 'react-dom';
-
 
 const style = {
   height: '100%',
@@ -19,14 +17,14 @@ const style = {
 }
 export const Canvas = () => {
 
-  const [tagName,setTagName] = useState('')
+  const [tagName,setTagName] = useState([])
   const [{canDrop , isOver}, drop] = useDrop(() => ({
     accept: Config.map(item=>item.type),
     drop: (item,monitor) => {
       // console.log('form Canvas',item,monitor)
       
       const {name} = item
-      setTagName(...tagName,name)
+      setTagName([...tagName,name])
       // setChild(Components[name])
       console.log(tagName)
 
@@ -40,8 +38,6 @@ export const Canvas = () => {
   }))
 
 
-  const Child = Components[tagName] || (()=>null)
-
   const isActive = canDrop && isOver
   let backgroundColor = 'grey'
   if (isActive) {
@@ -51,7 +47,12 @@ export const Canvas = () => {
   }
   return ( 
     <div id="canvas" ref={drop} style={{ ...style, backgroundColor }} data-testid="canvas">
-      <Child />
+      {
+        tagName.map( item => {
+          const Child =  Components[item] || (()=>null)
+          return <Child key={item}/>
+        } )
+      }
       {isActive ? 'Release to drop' : 'Drag a box here'}
     </div>
   )
